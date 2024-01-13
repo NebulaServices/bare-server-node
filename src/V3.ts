@@ -80,6 +80,8 @@ interface BareHeaderData {
 	passHeaders: string[];
 	passStatus: number[];
 	forwardHeaders: string[];
+	xBareProxyIP: string | null;
+	xBareProxyPort: string | null;
 }
 
 function readHeaders(request: BareRequest): BareHeaderData {
@@ -100,6 +102,9 @@ function readHeaders(request: BareRequest): BareHeaderData {
 	const headers = joinHeaders(request.headers);
 
 	const xBareURL = headers.get('x-bare-url');
+
+	const xBareProxyIP = headers.get('x-bare-proxy-ip');
+	const xBareProxyPort = headers.get('x-bare-proxy-port');
 
 	if (xBareURL === null)
 		throw new BareError(400, {
@@ -225,6 +230,8 @@ function readHeaders(request: BareRequest): BareHeaderData {
 		passHeaders,
 		passStatus,
 		forwardHeaders,
+		xBareProxyIP,
+		xBareProxyPort
 	};
 }
 
