@@ -66,21 +66,27 @@ export async function bareFetch(
 ): Promise<IncomingMessage> {
 	if (options.filterRemote) await options.filterRemote(remote);
 
-	// TEMP to be replaced with X-Bare-HTTP-Proxy
-	const httpsTunnelingAgent = tunnel.httpsOverHttp({ // TEMP
-		proxy: {
-			host: xBareProxyIP,
-			port: Number(xBareProxyPort)
-		}
-	});
+	let httpsTunnelingAgent;
+	let httpTunnelingAgent;
 
-	const httpTunnelingAgent = tunnel.httpOverHttp({ // TEMP
-		proxy: {
-			host: xBareProxyIP,
-			port: Number(xBareProxyPort)
-		}
-	});
+	if (xBareProxyIP === "" || xBareProxyPort === "") {
+		httpsTunnelingAgent = options.httpsAgent;
+		httpTunnelingAgent = options.httpAgent;
+	} else {
+		httpsTunnelingAgent = tunnel.httpsOverHttp({ 
+			proxy: {
+				host: xBareProxyIP,
+				port: Number(xBareProxyPort)
+			}
+		});
 
+		httpTunnelingAgent = tunnel.httpOverHttp({ 
+			proxy: {
+				host: xBareProxyIP,
+				port: Number(xBareProxyPort)
+			}
+		});
+	}
 	const req: RequestOptions = {
 		method: request.method,
 		headers: requestHeaders,
