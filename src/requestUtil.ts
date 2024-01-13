@@ -7,11 +7,27 @@ import type { ErrorEvent } from 'ws';
 import WebSocket from 'ws';
 import { BareError } from './BareServer.js';
 import type { BareRequest, Options } from './BareServer.js';
-
+import tunnel from "tunnel";
 export type BareHeaders = Record<string, string | string[]>;
 
 export const nullMethod = ['GET', 'HEAD'];
 export const nullBodyStatus = [101, 204, 205, 304];
+
+
+// TEMP to be replaced with X-Bare-HTTP-Proxy
+const httpsTunnelingAgent = tunnel.httpsOverHttp({ // TEMP
+		proxy: {
+		host: "127.0.0.1",
+		port: 8080
+	}
+});
+
+const httpTunnelingAgent = tunnel.httpOverHttp({ // TEMP
+	proxy: {
+		host: "127.0.0.1",
+		port: 8080
+	}
+});
 
 export function randomHex(byteLength: number) {
 	const bytes = new Uint8Array(byteLength);
@@ -77,16 +93,16 @@ export async function bareFetch(
 
 	// NodeJS will convert the URL into HTTP options automatically
 	// see https://github.com/nodejs/node/blob/e30e71665cab94118833cc536a43750703b19633/lib/internal/url.js#L1277
-
 	if (remote.protocol === 'https:')
 		outgoing = httpsRequest(remote, {
 			...req,
-			agent: options.httpsAgent,
+			agent: httpsTunnelingAgent,
+		
 		});
 	else if (remote.protocol === 'http:')
 		outgoing = httpRequest(remote, {
 			...req,
-			agent: options.httpAgent,
+			agent: httpTunnelingAgent,
 		});
 	else throw new RangeError(`Unsupported protocol: '${remote.protocol}'`);
 
