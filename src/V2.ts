@@ -91,6 +91,8 @@ interface BareHeaderData {
 	passHeaders: string[];
 	passStatus: number[];
 	forwardHeaders: string[];
+	xBareProxyIP: string;
+	xBareProxyPort: string;
 }
 
 function readHeaders(request: BareRequest): BareHeaderData {
@@ -148,6 +150,8 @@ function readHeaders(request: BareRequest): BareHeaderData {
 	}
 
 	const xBareHeaders = headers.get('x-bare-headers');
+	const xBareProxyIP: string = headers.get('x-bare-proxy-ip') ?? "";
+	const xBareProxyPort: string = headers.get('x-bare-proxy-port') ?? "";
 
 	if (xBareHeaders === null)
 		throw new BareError(400, {
@@ -261,6 +265,8 @@ function readHeaders(request: BareRequest): BareHeaderData {
 		passHeaders,
 		passStatus,
 		forwardHeaders,
+		xBareProxyIP,
+		xBareProxyPort
 	};
 }
 
@@ -275,7 +281,7 @@ const tunnelRequest: RouteCallback = async (request, res, options) => {
 		abort.abort();
 	});
 
-	const { remote, sendHeaders, passHeaders, passStatus, forwardHeaders } =
+	const { remote, sendHeaders, passHeaders, passStatus, forwardHeaders, xBareProxyIP, xBareProxyPort } =
 		readHeaders(request);
 
 	loadForwardedHeaders(forwardHeaders, sendHeaders, request);
@@ -285,7 +291,9 @@ const tunnelRequest: RouteCallback = async (request, res, options) => {
 		abort.signal,
 		sendHeaders,
 		remote,
-		options
+		options,
+		xBareProxyIP,
+		xBareProxyPort
 	);
 
 	const responseHeaders = new Headers();

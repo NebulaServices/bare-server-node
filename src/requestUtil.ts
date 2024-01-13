@@ -14,21 +14,6 @@ export const nullMethod = ['GET', 'HEAD'];
 export const nullBodyStatus = [101, 204, 205, 304];
 
 
-// TEMP to be replaced with X-Bare-HTTP-Proxy
-const httpsTunnelingAgent = tunnel.httpsOverHttp({ // TEMP
-		proxy: {
-		host: "127.0.0.1",
-		port: 8080
-	}
-});
-
-const httpTunnelingAgent = tunnel.httpOverHttp({ // TEMP
-	proxy: {
-		host: "127.0.0.1",
-		port: 8080
-	}
-});
-
 export function randomHex(byteLength: number) {
 	const bytes = new Uint8Array(byteLength);
 	getRandomValues(bytes);
@@ -75,9 +60,26 @@ export async function bareFetch(
 	signal: AbortSignal,
 	requestHeaders: BareHeaders,
 	remote: URL,
-	options: Options
+	options: Options,
+	xBareProxyIP: string,
+	xBareProxyPort: string,
 ): Promise<IncomingMessage> {
 	if (options.filterRemote) await options.filterRemote(remote);
+
+	// TEMP to be replaced with X-Bare-HTTP-Proxy
+	const httpsTunnelingAgent = tunnel.httpsOverHttp({ // TEMP
+		proxy: {
+			host: xBareProxyIP,
+			port: Number(xBareProxyPort)
+		}
+	});
+
+	const httpTunnelingAgent = tunnel.httpOverHttp({ // TEMP
+		proxy: {
+			host: xBareProxyIP,
+			port: Number(xBareProxyPort)
+		}
+	});
 
 	const req: RequestOptions = {
 		method: request.method,

@@ -34,6 +34,8 @@ function loadForwardedHeaders(
 interface BareHeaderData {
 	remote: URL;
 	headers: BareHeaders;
+	xBareProxyIP: string;
+	xBareProxyPort: string;
 }
 
 function readHeaders(request: BareRequest): BareHeaderData {
@@ -77,6 +79,8 @@ function readHeaders(request: BareRequest): BareHeaderData {
 	}
 
 	const xBareHeaders = request.headers.get('x-bare-headers');
+	const xBareProxyIP: string = request.headers.get('x-bare-proxy-ip') ?? "";
+	const xBareProxyPort: string = request.headers.get('x-bare-proxy-port') ?? "";
 
 	if (xBareHeaders === null)
 		throw new BareError(400, {
@@ -150,7 +154,7 @@ function readHeaders(request: BareRequest): BareHeaderData {
 		});
 	}
 
-	return { remote: remoteToURL(remote as BareRemote), headers };
+	return { remote: remoteToURL(remote as BareRemote), headers, xBareProxyIP, xBareProxyPort };
 }
 
 const tunnelRequest: RouteCallback = async (request, res, options) => {
@@ -164,14 +168,16 @@ const tunnelRequest: RouteCallback = async (request, res, options) => {
 		abort.abort();
 	});
 
-	const { remote, headers } = readHeaders(request);
+	const { remote, headers, xBareProxyIP, xBareProxyPort } = readHeaders(request);
 
 	const response = await bareFetch(
 		request,
 		abort.signal,
 		headers,
 		remote,
-		options
+		options,
+		xBareProxyIP,
+		xBareProxyPort
 	);
 
 	const responseHeaders = new Headers();
