@@ -96,6 +96,7 @@ export type BareManifest = {
 	versions: string[];
 	language: BareLanguage;
 	memoryUsage?: number;
+	HTTPProxy: boolean;
 };
 
 export interface Options {
@@ -175,6 +176,7 @@ export default class Server extends EventEmitter {
 		return {
 			versions: this.versions,
 			language: 'NodeJS',
+			HTTPProxy: true,
 			memoryUsage:
 				Math.round((process.memoryUsage().heapUsed / 1024 / 1024) * 100) / 100,
 			maintainer: this.options.maintainer,
