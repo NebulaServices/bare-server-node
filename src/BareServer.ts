@@ -213,6 +213,7 @@ export default class Server extends EventEmitter {
 	async routeRequest(req: IncomingMessage, res: ServerResponse) {
 		const request = new Request(new URL(req.url!, 'http://bare-server-node'), {
 			method: req.method,
+			duplex: "half",
 			body: nullMethod.includes(req.method || '') ? undefined : req,
 			headers: req.headers as HeadersInit,
 		}) as BareRequest;
