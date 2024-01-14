@@ -1,7 +1,7 @@
 {
-	"name": "@tomphttp/bare-server-node",
+	"name": "@nebula-services/bare-server-node",
 	"description": "The Bare Server implementation in NodeJS.",
-	"version": "2.0.1",
+	"version": "2.0.1-patch",
 	"homepage": "https://github.com/tomphttp",
 	"bugs": {
 		"url": "https://github.com/tomphttp/bare-server-node/issues",
@@ -9,7 +9,7 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/tomphttp/bare-server-node.git"
+		"url": "https://github.com/nebula-services/bare-server-node.git"
 	},
 	"author": {
 		"name": "TOMP Development",
